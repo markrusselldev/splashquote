@@ -26,6 +26,11 @@
   transition: 0.8s;
 }
 
+.btn-outline-info:hover,
+.btn-outline-info.hover {
+  color: white !important;
+}
+
 /*
  * Quote Bubble
  */
