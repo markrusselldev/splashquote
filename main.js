@@ -92,6 +92,7 @@ function jQueryFromJSON() {
 
       // Add image url to twitter meta
       $("#meta-twitter-image").attr("content", url);
+      
       // Add tweeLink to tweet button
       $("#tweet-quote").attr('href', tweetLink);
 
