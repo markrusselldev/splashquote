@@ -91,7 +91,7 @@ function jQueryFromJSON() {
        * Build Twitter tweetLink
        */
       // Encode URI
-      const encoded = encodeURIComponent('\"' + obj.content + ' -' + obj.author);
+      const encoded = encodeURIComponent('\"' + obj.content + '\" -' + obj.author);
      
       // Capitalize first letter of each tag
       let capitalizedTags = tags.map(element => {
@@ -106,7 +106,11 @@ function jQueryFromJSON() {
         JSON.stringify(capitalizedTags).replace(/(?:^|-)\S/g, a => a.toUpperCase()).replace('-', '')
       );
 
-      let tweetLink = `https://twitter.com/intent/tweet?text=${encoded}&hashtags=${tweetTags}&related=freecodecamp`;
+
+      const currentPageUrl = window.location.href;
+      //console.log(currentPageUrl);
+
+      let tweetLink = `https://twitter.com/intent/tweet?url=${currentPageUrl}&text=${encoded}&hashtags=${tweetTags}&via=markRussellDev`;
       //console.log(tweetLink)
 
       // Add tweeLink to tweet button
