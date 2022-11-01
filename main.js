@@ -91,21 +91,20 @@ function jQueryFromJSON() {
        * Build Twitter tweetLink
        */
       // Encode URI
-      const encoded = encodeURIComponent('\"' + obj.content + '\" -' + obj.author);
+      const encoded = encodeURIComponent('\"' + obj.content + '\" ' + obj.author);
      
       // Capitalize first letter of each tag
       let capitalizedTags = tags.map(element => {
         return element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
       });
      
-      // Hashtags cannot contain hypens
+      // Hashtags cannot contain hypens & each word should be capitalized
       // stringify the object, replace, then parse it
       // Capitalize first letter after '-' hypens, then remove hypens
       // e.g. famous-quotes is now FamousQuotes
       let tweetTags = JSON.parse(
         JSON.stringify(capitalizedTags).replace(/(?:^|-)\S/g, a => a.toUpperCase()).replace('-', '')
       );
-
 
       const currentPageUrl = window.location.href;
       //console.log(currentPageUrl);
