@@ -36,6 +36,7 @@ function jQueryFromJSON() {
     
       overlay.appendTo('body')
 
+      
       //------------
       // Free Random (older) images from Unsplash (no attribute necessary) - works better than the official api using search method. ***Couldn't get Unsplash api to work with /photos/random?query= as it suggests.
       // Note: Need to add random number to end of url to prevent browser caching and ensure a new image is loaded each time.
@@ -51,31 +52,52 @@ function jQueryFromJSON() {
       // https://source.unsplash.com/featured/1600x900?apple,desk
       let size = '1920x1080'; //1600x900
       var url = 'https://source.unsplash.com/' + size + '?' + tags[0] + '&' + Math.random()*Math.random();
-      // Original jQuery for background image
-      //$('body').css('background-image', 'url("' + url + '")');
+      
 
-      // Create a new image in memory and use load event to detect when the src is loaded
-      $('<img/>').attr('src', url).on('load', function() {
-        $(this).remove(); // Prevent memory leaks
-        overlay.hide(); // Hide spinner overlay
-        // Add background image
-        $('body').css('background-image', 'url(' + url + ')');
+      // Fetch image location for random image
+      // Set body and meta tag for twitter:image
+      // Hide overlay
+      // Note: Can't replicate this with ajax (find out why)
+      fetch(url).then( response => {
+        $('body').css('background-image', 'url(' + response.url + ')'); 
+        $('meta[name="twitter:image"]').attr("content", response.url);
+        overlay.hide();   
+      }).catch(error => {
+        overlay.hide();
+        console.warn(error);
       });
 
-      // Build our interface
+      // Add quote content to twitter:description meta
+      $('meta[name="twitter:description"]').attr("content", obj.content);
+
+
+      // Overlay Hack (When not using fetch or ajax to load random image): **Create a new image in memory and use load event to detect when the src is loaded
+      // $('<img/>').attr('src', url).on('load', function() {
+      //   $(this).remove(); // Prevent memory leaks
+      //   overlay.hide(); // Hide spinner overlay
+    
+        // Add background image
+        // $('body').css('background-image', 'url(' + url + ')');
+
+      // });
+
+      // Build the interface with jQuery
       $('#text').text(obj.content);
       $('#author').text(obj.author);
       $('#tags').text("#" + tagsDisplay);
 
-      // Build our Twitter links
+
+      /*
+       * Build Twitter tweetLink
+       */
+      // Encode URI
       const encoded = encodeURIComponent('\"' + obj.content + ' -' + obj.author);
-      //console.log(encoded);
      
       // Capitalize first letter of each tag
       let capitalizedTags = tags.map(element => {
         return element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
       });
-      //console.log(capitalizedTags);
+     
       // Hashtags cannot contain hypens
       // stringify the object, replace, then parse it
       // Capitalize first letter after '-' hypens, then remove hypens
@@ -84,21 +106,35 @@ function jQueryFromJSON() {
         JSON.stringify(capitalizedTags).replace(/(?:^|-)\S/g, a => a.toUpperCase()).replace('-', '')
       );
 
-      //console.log(tags);
-      //console.log(typeof tags);
-      //console.log(tweetTags);
       let tweetLink = `https://twitter.com/intent/tweet?text=${encoded}&hashtags=${tweetTags}&related=freecodecamp`;
-      console.log(tweetLink)
+      //console.log(tweetLink)
 
-      // Add image url to twitter meta
-      $("#meta-twitter-image").attr("content", url);
-      
       // Add tweeLink to tweet button
       $("#tweet-quote").attr('href', tweetLink);
 
-      /*
+		})
+		.fail(error => {
+      console.warn(error);  
+		})
+}// End $(document).ready()
+
+
+function getRandomImgURl( link ) {
+  // Not working. Why won't it return the string? It goes to console.
+  // return fetch( link )
+  //       .then((response) =>  response)
+  //       .then((responseData) => {
+  //       //console.log(responseData['url']);
+  //       return responseData['url'];
+  //     })
+  //       .catch(error => console.warn(error));
+}
+
+
+function useUnsplashApi( link ) {
+        /*
        * Official Unsplash API JSON call
-       *
+       * Need to find out how to keep my api key private before using thsi.
        * */
     // Search: https://api.unsplash.com/search/photos?query=
     // const unsplashKey = 'YOUR_UNSPLASH_KEY'
@@ -126,11 +162,5 @@ function jQueryFromJSON() {
     //         overlay.hide();
     //     }
     //   })
-  
-		})
-		.fail(function() {
-			alert("JSON data from api.quotable.io failed to load.")
-			overlay.hide();
-      
-		})
+
 }
