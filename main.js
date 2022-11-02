@@ -1,15 +1,16 @@
 $(document).ready(function(){
 
+  // Main button
   $('#new-quote').on('click', () => {
     jQueryFromJSON();
-  });// End .on('click')
+  });
 
   jQueryFromJSON();
 
 });// End $(document).ready
 
  /*
-  * jQueryFromJSON
+  * jQueryFromJSON (and Fetch, for now)
   *
   * */
 function jQueryFromJSON() {
@@ -37,7 +38,12 @@ function jQueryFromJSON() {
     
       overlay.appendTo('body')
 
-      
+      // Populate the interface with jQuery
+      $('#text').text(obj.content);
+      $('#author').text(obj.author);
+      $('#tags').text("#" + tagsDisplay);
+
+
       //------------
       // Free Random (older) images from Unsplash (no attribute necessary) - works better than the official api using search method. ***Couldn't get Unsplash api to work with /photos/random?query= as it suggests.
       // Note: Need to add random number to end of url to prevent browser caching and ensure a new image is loaded each time.
@@ -52,11 +58,10 @@ function jQueryFromJSON() {
       // https://source.unsplash.com/1600x900?apple,desk 
       // https://source.unsplash.com/featured/1600x900?apple,desk
       let size = '1920x1080'; //1600x900
-      var requestUrl = 'https://source.unsplash.com/' + size + '?' + tags[0] + '&' + Math.random()*Math.random();
+      let requestUrl = 'https://source.unsplash.com/' + size + '?' + tags[0] + '&' + Math.random()*Math.random();
       
 
-      // Fetch image location for random image
-      // Set body and meta tag for twitter:image
+      // Fetch image location for each image
       // Hide overlay
       // Note: Can't replicate this with ajax (find out why)
       fetch(requestUrl).then( response => {
@@ -70,15 +75,27 @@ function jQueryFromJSON() {
         // Add tweeLink to tweet button
         $("#tweet-quote").attr('href', buildTweetLink(obj.author, obj.content, tags)); 
 
+        // Copy image url on('click')
+        $('#copy-img-url').on('click', () => {
+          
+          // Copy text into clipboard ( todo: use .then after writeText)
+          navigator.clipboard.writeText(response.url);
+
+          var clipboardIcon = $('#copy-img-url').children( '.bi' );
+          clipboardIcon.removeClass( 'bi-clipboard-fill' ).addClass('bi-clipboard-check-fill');
+
+          // Timeout on checkmark
+          setTimeout(function() {
+              clipboardIcon.removeClass('bi-clipboard-check-fill').addClass('bi-clipboard-fill');
+          }, 4000);
+
+        });
+
       }).catch(error => {
-        overlay.hide();
+        //overlay.hide();
+        alert("Error: Unsplash.com background failed to load.");
         console.warn(error);
       });
-
-      // Twitter metas don't seem to work with jQuery (not in source)
-      // Add quote content to twitter:description meta
-      //$('meta[name="twitter:description"]').attr("content", obj.content);
-
 
       // Overlay Hack (When not using fetch or ajax to load random image): **Create a new image in memory and use load event to detect when the src is loaded
       // $('<img/>').attr('src', url).on('load', function() {
@@ -88,26 +105,24 @@ function jQueryFromJSON() {
         // Add background image
         // $('body').css('background-image', 'url(' + url + ')');
 
-      // });
-
-      // Build the interface with jQuery
-      $('#text').text(obj.content);
-      $('#author').text(obj.author);
-      $('#tags').text("#" + tagsDisplay);
-      
+      // });      
 		})
 		.fail(error => {
+      alert("Error: Quotable.io quote failed to load.");
       console.warn(error);  
 		})
 }// End $(document).ready()
 
 
 
+
+
+/*
+ * Build Twitter tweetLink
+ */
 function buildTweetLink (author, content, tags, url = '') {
-        /*
-       * Build Twitter tweetLink
-       */
-      // Encode URI
+
+      // Encode
       const encoded = encodeURIComponent('\"' + content + '\" ' + author);
      
       // Capitalize first letter of each tag
@@ -123,33 +138,20 @@ function buildTweetLink (author, content, tags, url = '') {
         JSON.stringify(capitalizedTags).replace(/(?:^|-)\S/g, a => a.toUpperCase()).replace('-', '')
       );
 
+      // If url not set, make it the home page
       if (url === '') {
         url = window.location.href;
       }
-      //const currentPageUrl = window.location.href;
-      //console.log(currentPageUrl);
 
       return `https://twitter.com/intent/tweet?url=${url}&text=${encoded}&hashtags=${tweetTags}&via=markRussellDev`;
       
 }
 
 
-function getRandomImgURl( link ) {
-  // Not working. Why won't it return the string? It goes to console.
-  // return fetch( link )
-  //       .then((response) =>  response)
-  //       .then((responseData) => {
-  //       //console.log(responseData['url']);
-  //       return responseData['url'];
-  //     })
-  //       .catch(error => console.warn(error));
-}
-
-
 function useUnsplashApi( link ) {
         /*
        * Official Unsplash API JSON call
-       * Need to find out how to keep my api key private before using thsi.
+       * Need to find out how to keep my api key private before using this. **Not working as a function yet. Just pasted here for safe keeping for now
        * */
     // Search: https://api.unsplash.com/search/photos?query=
     // const unsplashKey = 'YOUR_UNSPLASH_KEY'
@@ -179,29 +181,3 @@ function useUnsplashApi( link ) {
     //   })
 
 }
-
-
-        /*
-       * Build Twitter tweetLink backup
-       */
-      // Encode URI
-      // const encoded = encodeURIComponent('\"' + obj.content + '\" ' + obj.author);
-     
-      // // Capitalize first letter of each tag
-      // let capitalizedTags = tags.map(element => {
-      //   return element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
-      // });
-     
-      // // Hashtags cannot contain hypens & each word should be capitalized
-      // // stringify the object, replace, then parse it
-      // // Capitalize first letter after '-' hypens, then remove hypens
-      // // e.g. famous-quotes is now FamousQuotes
-      // let tweetTags = JSON.parse(
-      //   JSON.stringify(capitalizedTags).replace(/(?:^|-)\S/g, a => a.toUpperCase()).replace('-', '')
-      // );
-
-      // const currentPageUrl = window.location.href;
-      // //console.log(currentPageUrl);
-
-      // let tweetLink = `https://twitter.com/intent/tweet?url=${currentPageUrl}&text=${encoded}&hashtags=${tweetTags}&via=markRussellDev`;
-      // //console.log(tweetLink)
