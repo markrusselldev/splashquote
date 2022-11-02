@@ -21,6 +21,7 @@ function jQueryFromJSON() {
      
       let tags = [...obj.tags];
       let tagsDisplay = tags.join(" #");
+
       // Loading... screen
       // Bootstrap spinner inside #overlay div
       var overlay = $( '<div/>', {
@@ -51,17 +52,24 @@ function jQueryFromJSON() {
       // https://source.unsplash.com/1600x900?apple,desk 
       // https://source.unsplash.com/featured/1600x900?apple,desk
       let size = '1920x1080'; //1600x900
-      var url = 'https://source.unsplash.com/' + size + '?' + tags[0] + '&' + Math.random()*Math.random();
+      var requestUrl = 'https://source.unsplash.com/' + size + '?' + tags[0] + '&' + Math.random()*Math.random();
       
 
       // Fetch image location for random image
       // Set body and meta tag for twitter:image
       // Hide overlay
       // Note: Can't replicate this with ajax (find out why)
-      fetch(url).then( response => {
+      fetch(requestUrl).then( response => {
+        // Get url minus query string  for twitter link
+        let shortUrl = response.url.split('?')[0];
+
         $('body').css('background-image', 'url(' + response.url + ')'); 
-        $('meta[name="twitter:image"]').attr("content", response.url);
-        overlay.hide();   
+        $('meta[name="twitter:image"]').attr("content", shortUrl);
+        overlay.hide();
+        
+        // Add tweeLink to tweet button
+        $("#tweet-quote").attr('href', buildTweetLink(obj.author, obj.content, tags)); 
+
       }).catch(error => {
         overlay.hide();
         console.warn(error);
@@ -85,13 +93,21 @@ function jQueryFromJSON() {
       $('#text').text(obj.content);
       $('#author').text(obj.author);
       $('#tags').text("#" + tagsDisplay);
+      
+		})
+		.fail(error => {
+      console.warn(error);  
+		})
+}// End $(document).ready()
 
 
-      /*
+
+function buildTweetLink (author, content, tags, url = '') {
+        /*
        * Build Twitter tweetLink
        */
       // Encode URI
-      const encoded = encodeURIComponent('\"' + obj.content + '\" ' + obj.author);
+      const encoded = encodeURIComponent('\"' + content + '\" ' + author);
      
       // Capitalize first letter of each tag
       let capitalizedTags = tags.map(element => {
@@ -106,20 +122,15 @@ function jQueryFromJSON() {
         JSON.stringify(capitalizedTags).replace(/(?:^|-)\S/g, a => a.toUpperCase()).replace('-', '')
       );
 
-      const currentPageUrl = window.location.href;
+      if (url === '') {
+        url = window.location.href;
+      }
+      //const currentPageUrl = window.location.href;
       //console.log(currentPageUrl);
 
-      let tweetLink = `https://twitter.com/intent/tweet?url=${currentPageUrl}&text=${encoded}&hashtags=${tweetTags}&via=markRussellDev`;
-      //console.log(tweetLink)
-
-      // Add tweeLink to tweet button
-      $("#tweet-quote").attr('href', tweetLink);
-
-		})
-		.fail(error => {
-      console.warn(error);  
-		})
-}// End $(document).ready()
+      return `https://twitter.com/intent/tweet?url=${url}&text=${encoded}&hashtags=${tweetTags}&via=markRussellDev`;
+      
+}
 
 
 function getRandomImgURl( link ) {
@@ -167,3 +178,29 @@ function useUnsplashApi( link ) {
     //   })
 
 }
+
+
+        /*
+       * Build Twitter tweetLink backup
+       */
+      // Encode URI
+      // const encoded = encodeURIComponent('\"' + obj.content + '\" ' + obj.author);
+     
+      // // Capitalize first letter of each tag
+      // let capitalizedTags = tags.map(element => {
+      //   return element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
+      // });
+     
+      // // Hashtags cannot contain hypens & each word should be capitalized
+      // // stringify the object, replace, then parse it
+      // // Capitalize first letter after '-' hypens, then remove hypens
+      // // e.g. famous-quotes is now FamousQuotes
+      // let tweetTags = JSON.parse(
+      //   JSON.stringify(capitalizedTags).replace(/(?:^|-)\S/g, a => a.toUpperCase()).replace('-', '')
+      // );
+
+      // const currentPageUrl = window.location.href;
+      // //console.log(currentPageUrl);
+
+      // let tweetLink = `https://twitter.com/intent/tweet?url=${currentPageUrl}&text=${encoded}&hashtags=${tweetTags}&via=markRussellDev`;
+      // //console.log(tweetLink)
