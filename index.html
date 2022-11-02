@@ -11,7 +11,7 @@
         <meta name="twitter:creator" content="@markRussellDev">
         <meta name="twitter:title" content="SplashQuote">
         <meta name="twitter:description" content="Find A Matching Quote And Photo">
-        <meta name="twitter:image" content="https://markrusselldev.github.io/splashquote/assets/favicon.png">
+        <meta name="twitter:image" content="https://markrusselldev.github.io/splashquote/assets/favicon.png?v=sm">
         <!-- Open Graph -->
         <!-- <meta property="og:title" content="Tags might go here" />
         <meta property="og:description" content="Description Goes Here" />
@@ -66,16 +66,18 @@
                             <span id="author" class="ps-3 text-white fs-4">&nbsp;</span>
                           </div>
                           <div class="col-sm-5 col-xs-12 text-center">
-                            <!-- Copy Image Url Button -->
-                            <a id="copy-img-url" class="btn btn-lg btn-outline-info" role="button" title="Copy Image Link">
-                              <i class="bi bi-clipboard-fill"></i>
-                            </a> 
-                            <!-- Twitter Button -->
-                            <a id="tweet-quote" class="btn btn-lg btn-outline-info" role="button" title="Tweet This Quote" target="_blank">
-                              <i class="bi bi-twitter"></i>   
-                            </a>
+                            <div class="btn-group btn-group-lg mt-3 mt-sm-0" role="group">
+                              <!-- Copy Image Url Button -->
+                              <a id="copy-img-url" class="btn btn-outline-info" role="button" title="Copy Image Link">
+                                <i class="bi bi-clipboard-fill"></i>
+                              </a> 
+                              <!-- Twitter Button -->
+                              <a id="tweet-quote" class="btn btn-outline-info" role="button" title="Tweet This Quote" target="_blank">
+                                <i class="bi bi-twitter"></i>   
+                              </a>
                               <!-- Main Button -->
-                              <button type="button" href="#" id="new-quote" class="btn btn-lg btn-outline-info mt-3 mt-sm-0 fw-bold" title="Next Quote">Splash</button>
+                              <a href="#" id="new-quote" class="btn btn-outline-info fw-bold" title="Next Quote" role="button" type="button">Splash</a>
+                            </div><!-- End .btn-group -->
                           </div>
                         </div><!--  End row1 -->
                         <div class="row">
