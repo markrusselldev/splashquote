@@ -64,7 +64,7 @@ function jQueryFromJSON() {
         let shortUrl = response.url.split('?')[0];
 
         $('body').css('background-image', 'url(' + response.url + ')'); 
-        $('meta[name="twitter:image"]').attr("content", shortUrl);
+        //$('meta[name="twitter:image"]').attr("content", shortUrl);
         overlay.hide();
         
         // Add tweeLink to tweet button
@@ -75,8 +75,9 @@ function jQueryFromJSON() {
         console.warn(error);
       });
 
+      // Twitter metas don't seem to work with jQuery (not in source)
       // Add quote content to twitter:description meta
-      $('meta[name="twitter:description"]').attr("content", obj.content);
+      //$('meta[name="twitter:description"]').attr("content", obj.content);
 
 
       // Overlay Hack (When not using fetch or ajax to load random image): **Create a new image in memory and use load event to detect when the src is loaded
