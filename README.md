@@ -13,7 +13,8 @@ Get a random quote from Quotable.io -> Search Unsplash.com using each quote's ta
 - Goal 3: Need something like [Prerender](https://prerender.io)to inject meta tags before the DOM is rendered for the social bots.
 
 ## Notes
-Image size is set to 1920x1080 by default. This can be changed in main.js
+- Image size is set to 1920x1080 by default. This can be changed in main.js
+- Workaround for Goal 3 above: Added copy image url button
 
 
 ## Credits
