@@ -36,7 +36,7 @@ function jQueryFromJSON() {
               })
       });
     
-      overlay.appendTo('body')
+      overlay.appendTo('body');
 
       // Populate the interface with jQuery
       $('#text').text(obj.content);
@@ -114,9 +114,6 @@ function jQueryFromJSON() {
 }// End $(document).ready()
 
 
-
-
-
 /*
  * Build Twitter tweetLink
  */
@@ -148,7 +145,7 @@ function buildTweetLink (author, content, tags, url = '') {
 }
 
 
-function useUnsplashApi( link ) {
+function useUnsplashApi( url ) {
         /*
        * Official Unsplash API JSON call
        * Need to find out how to keep my api key private before using this. **Not working as a function yet. Just pasted here for safe keeping for now
