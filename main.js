@@ -1,7 +1,8 @@
 $(document).ready(function(){
 
   // Main button
-  $('#new-quote').on('click', () => {
+  $('#new-quote').on('click', (e) => {
+    e.preventDefault();
     jQueryFromJSON();
   });
 
